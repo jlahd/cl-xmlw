@@ -95,7 +95,7 @@ If you only need a namespace for a single tag, you can specify it there:
 
 ```cl
 (xmlw:writing-xml (*standard-output*)
-  (xmlw:with-tag (((namespace "http://somwhere/quux") "foo"))
+  (xmlw:with-tag (((xmlw:namespace "http://somwhere/quux") "foo"))
     (xmlw:attr "bar" "baz")
     (xmlw:content "Hello world!")))
 ```
@@ -109,8 +109,8 @@ If you only need a namespace for a single tag, you can specify it there:
 However, usually you would reuse the namespaces for a more complex structure:
 
 ```cl
-(let ((quux (namespace "http://somwhere/quux"))
-      (xyzzy (namespace "http://somewhere/xyzzy")))
+(let ((quux (xmlw:namespace "http://somwhere/quux"))
+      (xyzzy (xmlw:namespace "http://somewhere/xyzzy")))
   (xmlw:writing-xml (*standard-output*)
     (xmlw:with-tag ((quux "foo"))
       (xmlw:attr "bar" "baz")
@@ -129,8 +129,8 @@ However, usually you would reuse the namespaces for a more complex structure:
 And to get the tags (and attributes) prefixed nicely:
 
 ```cl
-(let ((quux (namespace "http://somwhere/quux"))
-      (xyzzy (namespace "http://somewhere/xyzzy")))
+(let ((quux (xmlw:namespace "http://somwhere/quux"))
+      (xyzzy (xmlw:namespace "http://somewhere/xyzzy")))
   (xmlw:writing-xml (*standard-output*)
     (xmlw:with-tag ((quux "foo"))
       (xmlw:attr (xmlw:*xmlns* "quuxref") quux)
@@ -151,6 +151,16 @@ And to get the tags (and attributes) prefixed nicely:
 ```
 
 ## Reference
+
+### Class `NAMESPACE`
+
+This class is used to track namespaces in the XML documents. It is opaque to users of the library.
+
+### Function `NAMESPACE`
+
+**(namespace uri)**
+
+Creates a new namespace object with the given URI.
 
 ### Macro `WRITING-XML`
 

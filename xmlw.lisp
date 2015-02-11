@@ -3,24 +3,22 @@
 ;;; The namespace class
 
 (defclass namespace ()
-  ((name :initarg :name :reader ns-name)))
+  ((uri :initarg :name :reader ns-uri)))
 
 (defmethod print-object ((x namespace) stream)
   (print-unreadable-object (x stream :type t :identity t)
-    (prin1 (ns-name x) stream)))
+    (prin1 (ns-uri x) stream)))
 
 (defmethod make-load-form ((ns namespace) &optional environment)
   (declare (ignore environment))
-  `(make-instance 'namespace :name ,(ns-name ns)))
+  `(make-instance 'namespace :name ,(ns-uri ns)))
 
 (defun ns= (ns1 ns2)
-  (string= (ns-name ns1) (ns-name ns2)))
+  (string= (ns-uri ns1) (ns-uri ns2)))
 
-(export 'namespace)
 (defun namespace (name)
   (make-instance 'namespace :name name))
 
-(export '*xmlns*)
 (defparameter *xmlns* (namespace "xmlns")
   "A namespace object denoting the 'xmlns' namespace.")
 
@@ -84,7 +82,6 @@
 (defvar *current-tag-opened*)
 (defvar *current-tag-compact*)
 
-(export 'writing-xml)
 (defmacro writing-xml ((stream &key (version "1.0") (encoding "UTF-8") standalone (indent 2) (prologue t))
 		       &body body)
   "Main wrapper for writing out XML data. Writes the <?xml...?> tag followed by the XML document in body."
@@ -110,7 +107,7 @@
     (indent -1)
     (write-char #\< *xml-stream*)
     (unless (write-name *current-tag-name*)
-      (write-attr "xmlns" (ns-name (first *current-tag-name*))))
+      (write-attr "xmlns" (ns-uri (first *current-tag-name*))))
     (dolist (a (nreverse *current-tag-attrs*))
       (write-attr (car a) (cdr a)))
     (if close
@@ -122,7 +119,6 @@
       (terpri *xml-stream*))
     (setf *current-tag-opened* t)))
 
-(export 'with-tag)
 (defmacro with-tag ((name &key compact) &body body)
   "Write out a tag. If compact is specified, the tag and all its contents will be written without line feeds and indentation also when pretty printing is enabled for the XML document."
   (when (and (listp name)
@@ -171,14 +167,13 @@
       (if (typep value 'namespace)
 	  (progn
 	    (push (cons value name) *xml-ns-dict*)
-	    (push (cons (list ns name) (ns-name value)) *current-tag-attrs*))
+	    (push (cons (list ns name) (ns-uri value)) *current-tag-attrs*))
 	  (error 'type-error :expected-type 'namespace :datum value))
       (if (stringp name)
 	  (push (cons (list ns name) value) *current-tag-attrs*)
 	  (error 'type-error :expected-type 'string :datum name)))
   value)
 
-(export 'attr)
 (defmacro attr (name value)
   "Write an attribute definition to the current tag."
   (when (and (listp name)
@@ -193,7 +188,6 @@
 	    `(prog1 ,value
 	       (push (cons ,name ,value) *current-tag-attrs*)))))
 
-(export 'content)
 (defun content (&rest data)
   "Write content to the current tag."
   (finish-open-tag)
@@ -206,18 +200,15 @@
     (terpri *xml-stream*))
   (first (last data)))
 
-(export 'content-format)
 (defun content-format (&rest args)
   "Write formatted content to the current tag."
   (content (apply #'format nil args)))
 
-(export 'tag)
 (defmacro tag (name &rest content)
   "Write a compact tag with the given content."
   `(with-tag (,name :compact t)
      (content ,@content)))
 
-(export 'cdata)
 (defun cdata (&rest data)
   "Write a CDATA block."
   (finish-open-tag)
@@ -262,7 +253,6 @@
     (terpri *xml-stream*))
   (first (last data)))
 
-(export 'cdata-format)
 (defun cdata-format (&rest args)
   "Write a CDATA block, filling it with formatted data."
   (cdata (apply #'format nil args)))
