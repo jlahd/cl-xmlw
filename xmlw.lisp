@@ -97,8 +97,7 @@
        (when ,standalone
 	 (write-attr "standalone" "yes"))
        (write-string "?>" *xml-stream*)
-       (when *xml-pretty*
-	 (terpri *xml-stream*)))
+       (terpri *xml-stream*))
      ,@body))
 
 (defun finish-open-tag (&key close)
@@ -111,7 +110,10 @@
     (dolist (a (nreverse *current-tag-attrs*))
       (write-attr (car a) (cdr a)))
     (if close
-	(write-string " />" *xml-stream*)
+	(progn
+	  (when *xml-pretty*
+	    (write-char #\space *xml-stream*))
+	  (write-string "/>" *xml-stream*))
 	(write-char #\> *xml-stream*))
     (when *current-tag-compact*
       (setf *xml-pretty* nil))
@@ -138,6 +140,7 @@
        (let ((*current-tag-name* ,(if (listp name)
 				      `(list ,@name)
 				      name))
+	     (*xml-ns-dict* *xml-ns-dict*)
 	     (*current-tag-attrs* nil)
 	     (*current-tag-opened* nil)
 	     (*current-tag-compact* (or *current-tag-compact* ,compact))
@@ -150,10 +153,7 @@
 	       (progn
 		 (indent -1)
 		 (write-string "</" *xml-stream*)
-		 (write-string ,(if (listp name)
-				    (second name)
-				    name)
-			       *xml-stream*)
+		 (write-name *current-tag-name*)
 		 (write-char #\> *xml-stream*)
 		 (when ,was-pretty
 		   (terpri *xml-stream*)))
