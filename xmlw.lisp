@@ -115,7 +115,7 @@
 	    (write-char #\space *xml-stream*))
 	  (write-string "/>" *xml-stream*))
 	(write-char #\> *xml-stream*))
-    (when *current-tag-compact*
+    (when (and *current-tag-compact* (not close))
       (setf *xml-pretty* nil))
     (when *xml-pretty*
       (terpri *xml-stream*))
@@ -207,7 +207,8 @@
 (defmacro tag (name &rest content)
   "Write a compact tag with the given content."
   `(with-tag (,name :compact t)
-     (content ,@content)))
+     ,(when content
+	`(content ,@content))))
 
 (defun cdata (&rest data)
   "Write a CDATA block."
