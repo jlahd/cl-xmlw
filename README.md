@@ -232,3 +232,8 @@ A convenience function - identical to `(cdata (format nil [args]))`.
 **(tag-format (ns name) &rest args)**
 
 A convenience function - identical to `(tag name (format nil [args]))`.
+
+## Contact information
+
+If you have a bug to report, or an enhancement to suggest, you can
+reach me at [jussi@lahdenniemi.fi](mailto:jussi@lahdenniemi.fi).
