@@ -4,6 +4,7 @@
 
 (asdf:defsystem cl-xmlw
   :name "cl-xmlw"
+  :version "1.0.0"
   :author "Jussi Lahdenniemi <jussi@lahdenniemi.fi>"
   :maintainer "Jussi Lahdenniemi <jussi@lahdenniemi.fi>"
   :license "MIT"
