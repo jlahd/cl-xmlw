@@ -4,6 +4,16 @@ A simple namespace-aware XML writer for Common Lisp. Much like the
 xml-emitter project (http://www.cliki.net/xml-emitter), but with
 better support for characters with codes over 255, namespaces, and CDATA.
 
+**NOTE!** cl-xmlw is quite close to what is provided by [CXML serialization interface](https://common-lisp.net/project/cxml/sax.html#serialization).
+I did not notice this before writing cl-xmlw, which is the reason I did.
+So, feel free to use cl-xmlw, but it is not going to be included in the
+quicklisp distribution, and I am not planning to maintain it in the future.
+
+There are a couple of things, though, that cl-xmlw does that CXML cannot do:
+
+* Emitting the `standalone="yes"` attribute in the XML prologue
+* Combining pretty-printed and "compact" XML in a single document as shown in the third example below.
+
 ## Basic use
 
 Without extra options, you get prettily printed XML with standard stuff:
@@ -48,7 +58,7 @@ Marking a tag compact removes the pretty printing from that tag, regardless of t
 <foo bar="baz">
     <simple>simple content</simple>
     <complex>
-	<![CDATA[extremely complex]]>
+        <![CDATA[extremely complex]]>
     </complex>
 </foo>
 ```
@@ -67,7 +77,7 @@ For convenience, the previous example can be written shortly using the `tag` mac
 <foo bar="baz">
     <simple>simple content</simple>
     <complex>
-	<![CDATA[extremely complex]]>
+        <![CDATA[extremely complex]]>
     </complex>
 </foo>
 ```
@@ -115,7 +125,7 @@ However, usually you would reuse the namespaces for a more complex structure:
     (xmlw:with-tag ((quux "foo"))
       (xmlw:attr "bar" "baz")
       (xmlw:with-tag ((xyzzy "greeting"))
-	(xmlw:content "Hello world!")))))
+        (xmlw:content "Hello world!")))))
 ```
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -137,9 +147,9 @@ And to get the tags (and attributes) prefixed nicely:
       (xmlw:attr (xmlw:*xmlns* "xyzzy") xyzzy)
       (xmlw:attr (quux "bar") "baz")
       (xmlw:with-tag ((xyzzy "greeting"))
-	(xmlw:attr (quux "target") "mankind")
-	(xmlw:attr (xyzzy "kind") "benevolent")
-	(xmlw:content "Hello world!")))))
+        (xmlw:attr (quux "target") "mankind")
+        (xmlw:attr (xyzzy "kind") "benevolent")
+        (xmlw:content "Hello world!")))))
 ```
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
